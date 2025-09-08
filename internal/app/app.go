@@ -25,13 +25,11 @@ func New() (*App, error) {
 
 	// Инициализация сервисов
 	leagueService := service.NewLeagueTableService(repo)
-	playerService := service.NewPlayerStatsService(repo)
 
 	// Инициализация обработчика
 	handler, err := handler.NewRabbitMQHandler(
 		cfg.RabbitMQURL,
 		leagueService,
-		playerService,
 	)
 	if err != nil {
 		return nil, err
