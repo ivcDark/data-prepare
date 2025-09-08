@@ -12,7 +12,6 @@ type RabbitMQHandler struct {
 	conn         *amqp.Connection
 	channel      *amqp.Channel
 	leagueSvc    *service.LeagueTableService
-	playerSvc    *service.PlayerStatsService
 }
 
 type Task struct {
@@ -21,7 +20,7 @@ type Task struct {
 	Timestamp string `json:"timestamp"`
 }
 
-func NewRabbitMQHandler(url string, leagueSvc *service.LeagueTableService, playerSvc *service.PlayerStatsService) (*RabbitMQHandler, error) {
+func NewRabbitMQHandler(url string, leagueSvc *service.LeagueTableService) (*RabbitMQHandler, error) {
 	conn, err := amqp.Dial(url)
 	if err != nil {
 		return nil, err
@@ -48,7 +47,6 @@ func NewRabbitMQHandler(url string, leagueSvc *service.LeagueTableService, playe
 		conn:      conn,
 		channel:   ch,
 		leagueSvc: leagueSvc,
-		playerSvc: playerSvc,
 	}, nil
 }
 
@@ -80,9 +78,6 @@ func (h *RabbitMQHandler) Start() {
 			case "update_league_tables":
 				log.Println("Processing league tables update")
 				h.leagueSvc.UpdateAllTables()
-			case "update_player_stats":
-				log.Println("Processing player stats update")
-				h.playerSvc.UpdateAllStats()
 			default:
 				log.Printf("Unknown task: %s", task.Task)
 			}
